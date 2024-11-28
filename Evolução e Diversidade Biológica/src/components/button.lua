@@ -1,7 +1,7 @@
 local composer = require("composer")
 local buttons = {}
 
--- Função para criar o botão "Próximo Amarelo"
+-- botão "Próximo Amarelo"
 function buttons.createNextYellowButton(sceneGroup, nextPage)
     local nextYellowButton = display.newImageRect(sceneGroup, "src/assets/ProximoAmarelo.png", 106, 40)
     nextYellowButton.x = 643
@@ -12,7 +12,7 @@ function buttons.createNextYellowButton(sceneGroup, nextPage)
     return nextYellowButton
 end
 
--- Função para criar o botão "Próximo Azul"
+-- botão "Próximo Azul"
 function buttons.createNextBlueButton(sceneGroup, nextPage)
     local nextBlueButton = display.newImageRect(sceneGroup, "src/assets/ProximoAzul.png", 106, 40)
     nextBlueButton.x = 643
@@ -23,10 +23,10 @@ function buttons.createNextBlueButton(sceneGroup, nextPage)
     return nextBlueButton
 end
 
--- Função para criar o botão "Voltar Azul"
+-- botão "Voltar Azul"
 function buttons.createBackBlueButton(sceneGroup, prevPage)
     local backBlueButton = display.newImageRect(sceneGroup, "src/assets/VoltarAzul.png", 106, 40)
-    backBlueButton.x = 43
+    backBlueButton.x = 103
     backBlueButton.y = 933
     backBlueButton:addEventListener("tap", function()
         composer.gotoScene(prevPage)
@@ -34,10 +34,10 @@ function buttons.createBackBlueButton(sceneGroup, prevPage)
     return backBlueButton
 end
 
--- Função para criar o botão "Voltar Amarelo"
+-- botão "Voltar Amarelo"
 function buttons.createBackYellowButton(sceneGroup, prevPage)
     local backYellowButton = display.newImageRect(sceneGroup, "src/assets/VoltarAmarelo.png", 106, 40)
-    backYellowButton.x = 43
+    backYellowButton.x = 103
     backYellowButton.y = 933
     backYellowButton:addEventListener("tap", function()
         composer.gotoScene(prevPage)
@@ -45,7 +45,7 @@ function buttons.createBackYellowButton(sceneGroup, prevPage)
     return backYellowButton
 end
 
--- Função para criar o botão "Início"
+-- botão "Início"
 function buttons.createInitialButton(sceneGroup, initialPage)
     local initialButton = display.newImageRect(sceneGroup, "src/assets/InitialButton.png", 106, 40)
     initialButton.x = 643
