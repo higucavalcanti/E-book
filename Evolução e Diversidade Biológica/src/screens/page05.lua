@@ -20,7 +20,7 @@ function scene:create(event)
     local sceneGroup = self.view
 
     -- Background
-    local background = display.newImageRect(sceneGroup, "src/assets/pages/page05/page05.png", display.contentWidth, display.contentHeight)
+    local background = display.newImageRect(sceneGroup, "src/assets/pages/page5/page05.png", display.contentWidth, display.contentHeight)
     background.x = display.contentCenterX
     background.y = display.contentCenterY
 

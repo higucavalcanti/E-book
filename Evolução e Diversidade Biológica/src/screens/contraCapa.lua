@@ -30,7 +30,7 @@ function scene:create(event)
     soundButton.y = 70
 
     -- Navigation Buttons
-    buttons.createPrevYellowButton(sceneGroup, "src.screens.page05")
+    buttons.createBackYellowButton(sceneGroup, "src.screens.page05")
     buttons.createInitialButton(sceneGroup, "src.screens.capa")
 
     -- Load and play audio
