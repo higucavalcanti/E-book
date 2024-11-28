@@ -16,7 +16,7 @@ local function toggleAudio(soundButton, audioFile)
     end
 end
 
--- Configuração dos estágios
+-- Imagens dos estágios
 local stages = {
     {image = "src/assets/pages/page1/Stage1.png", direction = "left"},  -- Ancestral
     {image = "src/assets/pages/page1/Stage2.png", direction = "right"}, -- Peixe
@@ -32,7 +32,7 @@ local stageImages = {}
 local zoomGroup
 local spiralGroup
 local isSpiralComplete = false
-local ancestralPosition = {x = 0, y = 0} -- Guarda a posição inicial do ancestral
+local ancestralPosition = {x = 0, y = 0}
 
 -- Função para criar a imagem de cada estágio
 local function createStageImage(index, x, y)
@@ -101,7 +101,7 @@ local function nextStage()
             radius = radius + 5
         end
     else
-        -- Recolher espiral de volta ao ancestral
+        -- Recolhe espiral de volta ao ancestral
         isSpiralComplete = false
 
         for i = #stages, 1, -1 do
