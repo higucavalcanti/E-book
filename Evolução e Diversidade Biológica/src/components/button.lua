@@ -26,7 +26,7 @@ end
 -- Função para criar o botão "Voltar Azul"
 function buttons.createBackBlueButton(sceneGroup, prevPage)
     local backBlueButton = display.newImageRect(sceneGroup, "src/assets/VoltarAzul.png", 106, 40)
-    backBlueButton.x = 32
+    backBlueButton.x = 43
     backBlueButton.y = 933
     backBlueButton:addEventListener("tap", function()
         composer.gotoScene(prevPage)
@@ -37,7 +37,7 @@ end
 -- Função para criar o botão "Voltar Amarelo"
 function buttons.createBackYellowButton(sceneGroup, prevPage)
     local backYellowButton = display.newImageRect(sceneGroup, "src/assets/VoltarAmarelo.png", 106, 40)
-    backYellowButton.x = 32
+    backYellowButton.x = 43
     backYellowButton.y = 933
     backYellowButton:addEventListener("tap", function()
         composer.gotoScene(prevPage)

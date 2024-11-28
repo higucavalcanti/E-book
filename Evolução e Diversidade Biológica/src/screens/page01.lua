@@ -1,7 +1,7 @@
 local composer = require("composer")
 local scene = composer.newScene()
 
-local buttons = require("src.components.buttons")
+local buttons = require("src.components.button")
 local audioHandle
 local backgroundMusic
 local hasPlayedAudio = false
@@ -20,17 +20,17 @@ function scene:create(event)
     local sceneGroup = self.view
 
     -- Background
-    local background = display.newImageRect(sceneGroup, "src/assets/pages/page01/page01.png", display.contentWidth, display.contentHeight)
+    local background = display.newImageRect(sceneGroup, "src/assets/pages/page1/page01.png", display.contentWidth, display.contentHeight)
     background.x = display.contentCenterX
     background.y = display.contentCenterY
 
     -- Audio Button
     local soundButton = display.newImageRect(sceneGroup, "src/assets/Audio.png", 48, 48)
-    soundButton.x = 43
-    soundButton.y = 31
+    soundButton.x = 45
+    soundButton.y = 70
 
     -- Navigation Buttons
-    buttons.createPrevYellowButton(sceneGroup, "src.screens.capa")
+    buttons.createBackYellowButton(sceneGroup, "src.screens.capa")
     buttons.createNextYellowButton(sceneGroup, "src.screens.page02")
 
     -- Load and play audio
