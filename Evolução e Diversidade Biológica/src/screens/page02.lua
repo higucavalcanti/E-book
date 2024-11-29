@@ -80,32 +80,26 @@ local function capturePrey(target)
     end
 end
 
-local isMoving = false -- Flag para controlar o movimento do predador
+ -- Movimento do predador até o local clicado
+ local function movePredator(event)
+    local targetX = math.max(display.contentWidth * 0.1, math.min(event.x, display.contentWidth * 0.9))
+    local targetY = math.max(display.contentHeight * 0.65, math.min(event.y, display.contentHeight * 0.85))
 
-local function movePredator(event)
-    if event.phase == "began" and not isMoving then
-        isMoving = true -- Impede novos movimentos enquanto o atual não termina
-
-        local targetX = math.max(display.contentWidth * 0.1, math.min(event.x, display.contentWidth * 0.9))
-        local targetY = math.max(display.contentHeight * 0.7, math.min(event.y, display.contentHeight * 0.85))
-
-        transition.to(predator, {
-            x = targetX,
-            y = targetY,
-            time = 300,
-            onComplete = function()
-                -- Checa se capturou alguma presa
-                for _, prey in ipairs(preyTable) do
-                    if math.abs(prey.x - predator.x) < 50 and math.abs(prey.y - predator.y) < 50 then
-                        capturePrey(prey)
-                    end
+    transition.to(predator, {
+        x = targetX,
+        y = targetY,
+        time = 300,
+        onComplete = function()
+            -- Detecta captura
+            for _, prey in ipairs(preyTable) do
+                if math.abs(prey.x - predator.x) < 50 and math.abs(prey.y - predator.y) < 50 then
+                    capturePrey(prey)
                 end
-                isMoving = false -- Libera o movimento novamente
             end
-        })
-    end
-    return true -- Permite que o evento não interfira em outros objetos
+        end
+    })
 end
+Runtime:addEventListener("touch", movePredator)
 
 -- Criar predador, presas e botões
 function scene:create(event)
