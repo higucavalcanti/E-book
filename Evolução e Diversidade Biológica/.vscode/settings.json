@@ -4,6 +4,8 @@
         "audio",
         "native",
         "transition",
-        "easing"
+        "easing",
+        "Runtime",
+        "hasPlayedAudio"
     ]
 }

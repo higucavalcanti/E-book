@@ -127,7 +127,7 @@ function scene:create(event)
     }
 
     for i = 1, #stoneImages do
-        local stone = display.newImageRect(sceneGroup, stoneImages[i], 210, 210)
+        local stone = display.newImageRect(sceneGroup, stoneImages[i], 220, 210)
         stone.x = fossil.x + math.random(-60, 60)
         stone.y = fossil.y + math.random(-60, 60)
         stone:addEventListener("touch", dragStone)
@@ -150,28 +150,12 @@ function scene:show(event)
     if event.phase == "will" then
         foundFossil = false
 
-        -- Posições predefinidas para garantir cobertura total
-        local positions = {
-            {x = fossil.x - 80, y = fossil.y - 80},
-            {x = fossil.x, y = fossil.y - 80},
-            {x = fossil.x + 80, y = fossil.y - 80},
-            {x = fossil.x - 80, y = fossil.y},
-            {x = fossil.x, y = fossil.y},
-            {x = fossil.x + 80, y = fossil.y},
-            {x = fossil.x - 80, y = fossil.y + 80},
-            {x = fossil.x, y = fossil.y + 80},
-            {x = fossil.x + 80, y = fossil.y + 80},
-        }
-
-        for i, stone in ipairs(stones) do
-            local pos = positions[i]
-            if pos then
-                stone.x = pos.x
-                stone.y = pos.y
-                stone.isVisible = true
-            else
-                stone.isVisible = false -- Esconde pedras extras não necessárias
-            end
+        -- Tentarr garantir cobertura total do fóssil
+        local offset = 50
+        for _, stone in ipairs(stones) do
+            stone.isVisible = true
+            stone.x = fossil.x + math.random(-offset, offset)
+            stone.y = fossil.y + math.random(-offset, offset)
         end
     end
 end
