@@ -6,6 +6,7 @@
         "transition",
         "easing",
         "Runtime",
-        "hasPlayedAudio"
+        "hasPlayedAudio",
+        "timer"
     ]
 }
