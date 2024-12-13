@@ -16,6 +16,79 @@ local function toggleAudio(soundButton, audioFile)
     end
 end
 
+-- Ativa o multitouch
+system.activate("multitouch")
+
+-- Grupo para gerenciar os passarinhos
+local birdGroup
+
+-- Imagens dos passarinhos
+local blueBirdImage = "src/assets/pages/page5/Blue-Bird.png"
+local pinkBirdImage = "src/assets/pages/page5/Pink-Bird.png"
+
+-- Função para criar os passarinhos iniciais
+local function createInitialBirds(sceneGroup)
+    -- Remove todos os passarinhos existentes
+    if birdGroup then
+        birdGroup:removeSelf()
+    end
+    birdGroup = display.newGroup()
+    sceneGroup:insert(birdGroup)
+
+    -- Blue Bird
+    local blueBird = display.newImageRect(birdGroup, blueBirdImage, 80, 80)
+    blueBird.x, blueBird.y = display.contentCenterX - 50, display.contentCenterY + 200
+    blueBird.type = "blue"
+
+    -- Pink Bird
+    local pinkBird = display.newImageRect(birdGroup, pinkBirdImage, 80, 80)
+    pinkBird.x, pinkBird.y = display.contentCenterX + 50, display.contentCenterY + 200
+    pinkBird.type = "pink"
+
+    -- Animação de balanço
+    transition.to(blueBird, {rotation = -5, time = 800, iterations = 0, transition = easing.continuousLoop})
+    transition.to(pinkBird, {rotation = 5, time = 800, iterations = 0, transition = easing.continuousLoop})
+end
+
+-- Função para gerar novos passarinhos
+local function createNewBirdPair()
+    local birdX, birdY
+
+    -- Gera posição aleatória segura
+    repeat
+        birdX = math.random(60, display.contentWidth - 60)
+        birdY = math.random(250, display.contentHeight - 120)
+    until not (birdX > 30 and birdX < 150 and birdY > 30 and birdY < 120) -- Ajuste do limite dos botões
+
+    -- Blue Bird
+    local blueBird = display.newImageRect(birdGroup, blueBirdImage, 80, 80)
+    blueBird.x, blueBird.y = birdX - 50, birdY
+    blueBird.type = "blue"
+    transition.to(blueBird, {rotation = -5, time = 800, iterations = 0, transition = easing.continuousLoop})
+
+    -- Pink Bird
+    local pinkBird = display.newImageRect(birdGroup, pinkBirdImage, 80, 80)
+    pinkBird.x, pinkBird.y = birdX + 50, birdY
+    pinkBird.type = "pink"
+    transition.to(pinkBird, {rotation = 5, time = 800, iterations = 0, transition = easing.continuousLoop})
+end
+
+-- Listener para interação de toque com gesto de pinça
+local function onPinch(event)
+    local target = event.target
+    local phase = event.phase
+
+    if phase == "began" then
+        display.getCurrentStage():setFocus(target, event.id)
+    elseif phase == "ended" then
+        display.getCurrentStage():setFocus(target, nil)
+
+        -- Adiciona um novo par de passarinhos
+        createNewBirdPair()
+    end
+    return true
+end
+
 function scene:create(event)
     local sceneGroup = self.view
 
@@ -24,30 +97,31 @@ function scene:create(event)
     background.x = display.contentCenterX
     background.y = display.contentCenterY
 
-    -- Botão de audio
+    -- Botão de áudio
     local soundButton = display.newImageRect(sceneGroup, "src/assets/Audio.png", 48, 48)
     soundButton.x = 45
     soundButton.y = 70
 
-     -- Botões de navegação
-     buttons.createBackYellowButton(sceneGroup, "src.screens.page04")
-     buttons.createNextYellowButton(sceneGroup, "src.screens.contraCapa")
- 
-     -- Áudio
-     backgroundMusic = audio.loadStream("src/assets/audios/audioPage5.mp3")
-     if not hasPlayedAudio then
-         audioHandle = audio.play(backgroundMusic, {channel = 1, loops = 0})
-         hasPlayedAudio = true
-     end
- 
-     -- Área de toque personalizada ajustada
-     local touchArea = display.newRect(sceneGroup, display.contentCenterX, display.contentHeight * 0.6, display.contentWidth, display.contentHeight * 0.5)
-     touchArea.isHitTestable = true
-     touchArea.isVisible = false -- Apenas para detectar toques
+    -- Botões de navegação
+    buttons.createBackYellowButton(sceneGroup, "src.screens.page04")
+    buttons.createNextYellowButton(sceneGroup, "src.screens.contraCapa")
+
+    -- Áudio
+    backgroundMusic = audio.loadStream("src/assets/audios/audioPage5.mp3")
+    if not hasPlayedAudio then
+        audioHandle = audio.play(backgroundMusic, {channel = 1, loops = 0})
+        hasPlayedAudio = true
+    end
 
     soundButton:addEventListener("tap", function()
         toggleAudio(soundButton, backgroundMusic)
     end)
+
+    -- Cria os passarinhos iniciais
+    createInitialBirds(sceneGroup)
+
+    -- Adiciona listener de gesto de pinça nos passarinhos
+    birdGroup:addEventListener("touch", onPinch)
 end
 
 function scene:destroy(event)
