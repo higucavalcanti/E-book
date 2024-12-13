@@ -23,7 +23,7 @@ local function createPrey(sceneGroup, image, size, speed, isFast)
     prey.y = math.random(display.contentHeight * 0.7, display.contentHeight * 0.85)
     prey.speed = speed
     prey.isFast = isFast
-    prey.escapes = 0
+    prey.collisionRadius = isFast and 120 or 60 -- Aumenta a área de colisão para presas velozes e normais
     prey.transition = nil -- Adicionado para controlar transições
     preyTable[#preyTable + 1] = prey
     return prey
@@ -31,16 +31,42 @@ end
 
 -- Função de movimento das presas
 local function movePrey(prey)
-    if prey.escapes >= 4 then
-        if prey.transition then transition.cancel(prey.transition) end
-        prey.transition = transition.to(prey, {
-            x = prey.x + math.random(-50, 50),
+    local xDirection = math.random(-1, 1)
+    local yDirection = math.random(-1, 1)
+    local newX = math.max(display.contentWidth * 0.1, math.min(prey.x + (xDirection * prey.speed), display.contentWidth * 0.9))
+    local newY = math.max(display.contentHeight * 0.7, math.min(prey.y + (yDirection * prey.speed), display.contentHeight * 0.85))
+
+    -- Mantém presas velozes longe do predador
+    if prey.isFast then
+        local distanceToPredator = math.sqrt((newX - predator.x)^2 + (newY - predator.y)^2)
+        if distanceToPredator < 200 then -- Distância mínima de segurança
+            newX = prey.x + (math.random(-1, 1) * 50)
+            newY = prey.y + (math.random(-1, 1) * 50)
+        end
+    end
+
+    if prey.transition then transition.cancel(prey.transition) end
+    prey.transition = transition.to(prey, {
+        x = newX,
+        y = newY,
+        time = 800, -- Tempo ajustado
+        onComplete = function() movePrey(prey) end
+    })
+end
+
+-- Função de captura das presas
+local function capturePrey(target)
+    if target.isFast then
+        -- Lógica de fuga completa para presas velozes
+        if target.transition then transition.cancel(target.transition) end
+        target.transition = transition.to(target, {
+            x = target.x + math.random(-50, 50),
             y = -100,
-            time = 800, -- Tempo ajustado
+            time = 800, -- Tempo ajustado para fuga
             onComplete = function()
-                display.remove(prey)
+                display.remove(target)
                 for i = #preyTable, 1, -1 do
-                    if preyTable[i] == prey then
+                    if preyTable[i] == target then
                         table.remove(preyTable, i)
                         break
                     end
@@ -48,36 +74,6 @@ local function movePrey(prey)
                 print("A presa veloz fugiu completamente!")
             end
         })
-    else
-        local xDirection = math.random(-1, 1)
-        local yDirection = math.random(-1, 1)
-        local newX = math.max(display.contentWidth * 0.1, math.min(prey.x + (xDirection * prey.speed), display.contentWidth * 0.9))
-        local newY = math.max(display.contentHeight * 0.7, math.min(prey.y + (yDirection * prey.speed), display.contentHeight * 0.85))
-        if prey.transition then transition.cancel(prey.transition) end
-        prey.transition = transition.to(prey, {
-            x = newX,
-            y = newY,
-            time = 800, -- Tempo ajustado
-            onComplete = function() movePrey(prey) end
-        })
-    end
-end
-
--- Função de captura das presas
-local function capturePrey(target)
-    if target.isFast then
-        target.escapes = target.escapes + 1
-        print("A presa veloz escapou mais uma vez! Esquivas: " .. target.escapes)
-        if target.escapes >= 4 then
-            movePrey(target) -- Lógica de fuga completa no próximo movimento
-        else
-            local escapeAngle = math.random(0, 360) * math.pi / 180
-            local escapeDistance = 100
-            local newX = math.max(display.contentWidth * 0.1, math.min(target.x + math.cos(escapeAngle) * escapeDistance, display.contentWidth * 0.9))
-            local newY = math.max(display.contentHeight * 0.7, math.min(target.y + math.sin(escapeAngle) * escapeDistance, display.contentHeight * 0.85))
-            if target.transition then transition.cancel(target.transition) end
-            target.transition = transition.to(target, {x = newX, y = newY, time = 300})
-        end
     else
         display.remove(target)
         for i = #preyTable, 1, -1 do
@@ -102,7 +98,8 @@ local function movePredator(event)
         time = 400,
         onComplete = function()
             for _, prey in ipairs(preyTable) do
-                if math.abs(prey.x - predator.x) < 50 and math.abs(prey.y - predator.y) < 50 then
+                local distance = math.sqrt((prey.x - predator.x)^2 + (prey.y - predator.y)^2)
+                if distance < prey.collisionRadius then
                     capturePrey(prey)
                 end
             end
@@ -125,7 +122,7 @@ function scene:create(event)
     preyTable = {}
     createPrey(sceneGroup, "src/assets/pages/page2/gazela.png", 70, 50, false)
     createPrey(sceneGroup, "src/assets/pages/page2/zebra.png", 80, 60, false)
-    createPrey(sceneGroup, "src/assets/pages/page2/veloz.png", 90, 80, true)
+    createPrey(sceneGroup, "src/assets/pages/page2/veloz.png", 90, 150, true) -- Velocidade aumentada para 120
 
     for _, prey in ipairs(preyTable) do
         movePrey(prey)
