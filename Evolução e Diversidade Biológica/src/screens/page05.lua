@@ -46,8 +46,8 @@ local function createInitialBirds(sceneGroup)
     pinkBird.type = "pink"
 
     -- Animação de balanço
-    transition.to(blueBird, {rotation = -5, time = 800, iterations = 0, transition = easing.continuousLoop})
-    transition.to(pinkBird, {rotation = 5, time = 800, iterations = 0, transition = easing.continuousLoop})
+    transition.to(blueBird, {rotation = -10, time = 800, iterations = 0, transition = easing.continuousLoop})
+    transition.to(pinkBird, {rotation = 10, time = 800, iterations = 0, transition = easing.continuousLoop})
 end
 
 -- Função para gerar novos passarinhos
@@ -58,19 +58,19 @@ local function createNewBirdPair()
     repeat
         birdX = math.random(60, display.contentWidth - 60)
         birdY = math.random(250, display.contentHeight - 120)
-    until not (birdX > 30 and birdX < 150 and birdY > 30 and birdY < 120) -- Ajuste do limite dos botões
+    until not (birdX > 30 and birdX < 150 and birdY > 30 and birdY < 170) -- Ajuste do limite dos botões e imagem de instrução
 
     -- Blue Bird
     local blueBird = display.newImageRect(birdGroup, blueBirdImage, 80, 80)
     blueBird.x, blueBird.y = birdX - 50, birdY
     blueBird.type = "blue"
-    transition.to(blueBird, {rotation = -5, time = 800, iterations = 0, transition = easing.continuousLoop})
+    transition.to(blueBird, {rotation = -10, time = 800, iterations = 0, transition = easing.continuousLoop})
 
     -- Pink Bird
     local pinkBird = display.newImageRect(birdGroup, pinkBirdImage, 80, 80)
     pinkBird.x, pinkBird.y = birdX + 50, birdY
     pinkBird.type = "pink"
-    transition.to(pinkBird, {rotation = 5, time = 800, iterations = 0, transition = easing.continuousLoop})
+    transition.to(pinkBird, {rotation = 10, time = 800, iterations = 0, transition = easing.continuousLoop})
 end
 
 -- Listener para interação de toque com gesto de pinça
@@ -80,11 +80,19 @@ local function onPinch(event)
 
     if phase == "began" then
         display.getCurrentStage():setFocus(target, event.id)
+    elseif phase == "moved" then
+        -- Verifica se os pássaros colidiram no centro
+        local birds = birdGroup.numChildren
+        if birds >= 2 then
+            local bird1 = birdGroup[birds - 1]
+            local bird2 = birdGroup[birds]
+
+            if math.abs(bird1.x - bird2.x) < 10 and math.abs(bird1.y - bird2.y) < 10 then
+                createNewBirdPair()
+            end
+        end
     elseif phase == "ended" then
         display.getCurrentStage():setFocus(target, nil)
-
-        -- Adiciona um novo par de passarinhos
-        createNewBirdPair()
     end
     return true
 end
@@ -105,6 +113,12 @@ function scene:create(event)
     -- Botões de navegação
     buttons.createBackYellowButton(sceneGroup, "src.screens.page04")
     buttons.createNextYellowButton(sceneGroup, "src.screens.contraCapa")
+
+    -- Imagem de instrução
+    local instructionImage = display.newImageRect(sceneGroup, "src/assets/pages/page5/instrucao.png", 120, 110)
+    instructionImage.x = display.contentCenterX
+    instructionImage.y = display.contentHeight - 80
+    transition.to(instructionImage, {time = 1000, alpha = 0.7, iterations = 0, transition = easing.continuousLoop})
 
     -- Áudio
     backgroundMusic = audio.loadStream("src/assets/audios/audioPage5.mp3")
