@@ -4,6 +4,7 @@ local scene = composer.newScene()
 local buttons = require("src.components.button")
 local backgroundMusic, audioHandle, hasPlayedAudio = nil, nil, false
 local predator, preyTable, capturedPrey = nil, {}, 0
+local fugaText -- Variável para texto de fuga
 
 -- Função para alternar o áudio (ligar/desligar)
 local function toggleAudio(soundButton, audioFile)
@@ -23,7 +24,7 @@ local function createPrey(sceneGroup, image, size, speed, isFast)
     prey.y = math.random(display.contentHeight * 0.7, display.contentHeight * 0.85)
     prey.speed = speed
     prey.isFast = isFast
-    prey.collisionRadius = isFast and 120 or 60 -- Aumenta a área de colisão para presas velozes e normais
+    prey.collisionRadius = isFast and 210 or 65 -- Aumenta a área de colisão para presas velozes
     prey.transition = nil -- Adicionado para controlar transições
     preyTable[#preyTable + 1] = prey
     return prey
@@ -39,9 +40,9 @@ local function movePrey(prey)
     -- Mantém presas velozes longe do predador
     if prey.isFast then
         local distanceToPredator = math.sqrt((newX - predator.x)^2 + (newY - predator.y)^2)
-        if distanceToPredator < 200 then -- Distância mínima de segurança
-            newX = prey.x + (math.random(-1, 1) * 50)
-            newY = prey.y + (math.random(-1, 1) * 50)
+        if distanceToPredator < 280 then -- Distância mínima de segurança
+            newX = prey.x + (math.random(-1, 1) * 100)
+            newY = prey.y + (math.random(-1, 1) * 100)
         end
     end
 
@@ -49,20 +50,20 @@ local function movePrey(prey)
     prey.transition = transition.to(prey, {
         x = newX,
         y = newY,
-        time = 800, -- Tempo ajustado
+        time = 600, -- Tempo ajustado
         onComplete = function() movePrey(prey) end
     })
 end
 
 -- Função de captura das presas
-local function capturePrey(target)
+local function capturePrey(sceneGroup, target)
     if target.isFast then
         -- Lógica de fuga completa para presas velozes
         if target.transition then transition.cancel(target.transition) end
         target.transition = transition.to(target, {
             x = target.x + math.random(-50, 50),
             y = -100,
-            time = 800, -- Tempo ajustado para fuga
+            time = 600, -- Tempo ajustado para fuga
             onComplete = function()
                 display.remove(target)
                 for i = #preyTable, 1, -1 do
@@ -71,7 +72,17 @@ local function capturePrey(target)
                         break
                     end
                 end
-                print("A presa veloz fugiu completamente!")
+                -- Texto de fuga completa
+                fugaText = display.newText({
+                    text = "A presa veloz fugiu completamente!",
+                    x = display.contentCenterX,
+                    y = display.contentHeight * 0.95, -- Movido para o final da tela
+                    font = native.systemFontBold,
+                    fontSize = 24
+                })
+                fugaText:setFillColor(0, 0, 0) -- Cor alterada para preto
+                sceneGroup:insert(fugaText) -- Adicione ao grupo de cena
+                timer.performWithDelay(2000, function() display.remove(fugaText) end) -- Remove mensagem após 2 segundos
             end
         })
     else
@@ -100,12 +111,13 @@ local function movePredator(event)
             for _, prey in ipairs(preyTable) do
                 local distance = math.sqrt((prey.x - predator.x)^2 + (prey.y - predator.y)^2)
                 if distance < prey.collisionRadius then
-                    capturePrey(prey)
+                    capturePrey(scene.view, prey) -- Passe o scene.view aqui
                 end
             end
         end
     })
 end
+
 Runtime:addEventListener("touch", movePredator)
 
 -- Criar predador, presas e botões
@@ -122,7 +134,7 @@ function scene:create(event)
     preyTable = {}
     createPrey(sceneGroup, "src/assets/pages/page2/gazela.png", 70, 50, false)
     createPrey(sceneGroup, "src/assets/pages/page2/zebra.png", 80, 60, false)
-    createPrey(sceneGroup, "src/assets/pages/page2/veloz.png", 90, 150, true) -- Velocidade aumentada para 120
+    createPrey(sceneGroup, "src/assets/pages/page2/veloz.png", 90, 300, true) -- Velocidade aumentada para 250
 
     for _, prey in ipairs(preyTable) do
         movePrey(prey)
@@ -143,6 +155,17 @@ function scene:create(event)
         audioHandle = audio.play(backgroundMusic, {channel = 1, loops = -1})
         hasPlayedAudio = true
     end
+
+    -- Texto de fuga completa
+    fugaText = display.newText({
+        text = "",
+        x = display.contentCenterX,
+        y = display.contentHeight * 0.1,
+        font = native.systemFontBold,
+        fontSize = 24
+    })
+    fugaText:setFillColor(1, 0, 0)
+    sceneGroup:insert(fugaText)
 end
 
 function scene:destroy(event)
