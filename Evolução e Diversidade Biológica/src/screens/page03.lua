@@ -74,8 +74,8 @@ local function mutateEffect(target)
     })
 end
 
--- Função de evolução do pássaro
-local function evolveBird()
+-- Função para simular transmissão de mutação para descendentes
+local function simulateMutation()
     if evolutionStage < #birdImages then
         evolutionStage = evolutionStage + 1
         createParticles(bird.x, bird.y)
@@ -92,11 +92,12 @@ local function evolveBird()
     end
 end
 
--- Função para detectar shake e iniciar evolução
-local function onShake(event)
-    if event.isShake then
-        evolveBird()
+-- Função de interação do usuário via toque para iniciar a mutação
+local function onBirdTapped(event)
+    if event.phase == "ended" then
+        simulateMutation()
     end
+    return true
 end
 
 function scene:create(event)
@@ -132,7 +133,7 @@ function scene:create(event)
         toggleAudio(soundButton, backgroundMusic)
     end)
 
-    Runtime:addEventListener("accelerometer", onShake)
+    bird:addEventListener("touch", onBirdTapped)
 end
 
 -- Reiniciar evolução ao entrar novamente na cena
@@ -151,7 +152,7 @@ function scene:destroy(event)
         audio.dispose(backgroundMusic)
         backgroundMusic = nil
     end
-    Runtime:removeEventListener("accelerometer", onShake)
+    bird:removeEventListener("touch", onBirdTapped)
 end
 
 function scene:hide(event)
