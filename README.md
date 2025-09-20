@@ -4,7 +4,7 @@ Este projeto é um e-book interativo desenvolvido como trabalho acadêmico para 
 
 O aplicativo foi desenvolvido utilizando o framework **Solar2D** (antigo Corona SDK) e a linguagem de script **Lua**, permitindo a criação de conteúdo interativo multiplataforma para dispositivos móveis (iOS e Android).
 
-## インタラクティブな機能 (Funcionalidades Interativas)
+## Funcionalidades Interativas
 
 O e-book guia o usuário através de cinco capítulos principais, cada um com mecânicas de interação únicas para exemplificar os conceitos apresentados:
 
